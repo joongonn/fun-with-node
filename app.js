@@ -52,3 +52,6 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
+
+//FIXME: prime all the static assets eg. profile icons

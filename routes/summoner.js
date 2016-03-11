@@ -8,7 +8,7 @@ router.get('/:name', function(req, res, next) {
     var name = req.params.name;
     var season = 'SEASON2016';
     statsManager.getSummonerSummary(region, season, name)
-                .then(summary => res.render('index', { summoner: JSON.stringify(summary, null, 4) }))
+                .then(summary => res.render('summoner', { summoner: JSON.stringify(summary, null, 4) }))
                 .catch(next);
 });
 

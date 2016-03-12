@@ -5,3 +5,7 @@ body {
 .bgwhite { 
     background-color: #fff;
 }
+
+.bold { 
+    font-weight: bolder;
+}

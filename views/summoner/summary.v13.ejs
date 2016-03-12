@@ -1,0 +1,25 @@
+<div>
+    <ul class="nav nav-tabs" role="tablist">
+        <% for (var i=0; i<summary.playerStatSummaries.length; i++) { %>
+            <% if (i==0) { %>
+                <li class="active">
+            <% } else { %>
+                <li>
+            <% } %>
+                <a href="#summary_<%=i%>" data-toggle="tab"><%= summary.playerStatSummaries[i].playerStatSummaryType %></a>
+            </li>
+        <% } %>
+    </ul>
+
+    <div class="tab-content">
+        <% for (var i=0; i<summary.playerStatSummaries.length; i++) { %>
+            <% if (i==0) { %>
+                <div role="tabpanel" class="tab-pane active" id="summary_<%= i %>">
+            <% } else { %>
+                <div role="tabpanel" class="tab-pane" id="summary_<%= i %>">
+            <% } %>
+                <pre><%= JSON.stringify(summary.playerStatSummaries[i], null, 4) %></pre>
+            </div>
+        <% } %>
+    </div>
+</div>

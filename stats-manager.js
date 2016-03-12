@@ -29,11 +29,11 @@ var self = module.exports = {
         } else {
             var promise = self.getSummoner(region, name)
                               .then(summoner => riot.getSummonerSummary(region, season, summoner.id)
-                                                    .then(summary => {
-                                                         summary.$summoner = summoner;
-                                                         summary.$season = season;
-                                                         return summary;
-                                                     }));
+                                                    .then(summary => ({
+                                                         summoner: summoner,
+                                                         season: season,
+                                                         summary : summary
+                                                     })));
             cacheManager.set(cacheKey, promise.catch(err => cacheManager.evict(cacheKey)));
             return promise;
         }

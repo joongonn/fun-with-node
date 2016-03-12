@@ -7,12 +7,12 @@ module.exports = function(apiKey) {
     }
 
     const hosts = {
-        'NA' : 'https://na.api.pvp.net',
+        'NA' : 'https://na.api.pvp.net', //FIXME: this assumes same version across all regions
         'KR' : 'https://kr.api.pvp.net'
     }
 
     return {
-        getSummonerByName: function(region, name) {
+        getSummonerByName: function(region, name) { //FIXME: batched query
             const version = 1.4;
             var options = {
                 uri: hosts[region] + `/api/lol/${region}/v${version}/summoner/by-name/${name}?api_key=${apiKey}`,
@@ -35,5 +35,6 @@ module.exports = function(apiKey) {
 }
 
 //REMINDER: singleton 'by default'
+//TODO: versioning? 
 //TODO: call counting?
 //FIXME: 404 may indicate "no such summoner"

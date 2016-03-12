@@ -1,10 +1,50 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>fun-with-node</title>
-    <link rel="stylesheet" href="/stylesheets/bootstrap.css" />
-  </head>
-  <body>
-    <pre><%= summoner %></pre>
-  </body>
+    <head>
+        <link rel="stylesheet" href="/stylesheets/bootstrap.css" />
+        <link rel="stylesheet" href="/stylesheets/style.css" />
+        <script src="/javascripts/jquery-2.2.1.min.js"></script>
+        <script src="/javascripts/bootstrap.min.js"></script>
+        <style>
+        .tab-content {
+            padding: 10px;
+            border-width: 0px 1px 1px 1px;
+            border-style: solid;
+            border-color: #ddd
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row well well-sm">
+                <div class="media">
+                    <div class="media-left">
+                        <a href="#"><img src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/profileicon/<%=summoner.profileIconId%>.png" class="media-object"></a>
+                    </div>
+                    <div class="media-body">
+                        <h3 class="media-heading"><%= summoner.name %></h3>
+                        <p><b>Level</b> <%= summoner.summonerLevel %></p>
+                        <pre class="bgwhite"><%= JSON.stringify(summoner, null, 4) %></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#summary" data-toggle="tab">Summary</a></li>
+                    <li role="presentation"><a href="#TODO" data-toggle="tab">TODO</a></li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="summary">
+                    <pre><%= JSON.stringify(summary, null, 4) %></pre>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="TODO">2</div>
+                </div>
+            </div>
+        </div>
+
+    </body>
 </html>

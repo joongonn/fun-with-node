@@ -9,7 +9,11 @@ router.get('/:region/:name', function(req, res, next) {
     var season = 'SEASON2016'; //FIXME: global const this
     
     statsManager.getSummonerSummary(region, season, name)
-                .then(summary => res.render('summoner', { summoner: JSON.stringify(summary, null, 4) }))
+                .then(summary => res.render('summoner', {
+                     season: season,
+                     summoner: summary.summoner,
+                     summary: summary.summary
+                 }))
                 .catch(next);
 });
 

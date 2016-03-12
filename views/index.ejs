@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>fun-with-node</title>
+        <link rel="stylesheet" href="/stylesheets/bootstrap.css" />
+        <script src="javascripts/jquery-2.2.1.min.js"></script>
+        <style>
+        body {
+            padding: 10px;
+        }
+        .summoner-form {
+            background-color: #fff;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4 well well-sm">
+                    <div class="input-group summoner-form">
+                        <input id="summonerName" type="text" class="form-control"  style="width: 75%" placeholder="Summoner Name" oninput="checkSummonerName()">
+                        <select id="region" class="form-control" style="width: 25%">
+                            <% for (var i=0; i<regions.length; i++) { %>
+                                <option value="<%=regions[i]%>"><%=regions[i]%></option>
+                            <% } %>
+                        </select>
+                        <span class="input-group-btn">
+                            <button id="searchButton" class="btn btn-primary" onclick="search()">Search</button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+        </div>
+
+        <script>
+            var summonerNameInput = $('#summonerName');
+
+            function checkSummonerName() {
+                var name = summonerNameInput.val();
+                $('#searchButton').prop('disabled', !name);
+                return name;
+            }
+
+            function search() {
+                var name = summonerNameInput.val();
+                var region = $('#region').val();
+                region = 
+
+                window.location.href = '/summoner/' + region + '/' + name;
+            }
+
+            $(function() {
+                summonerNameInput.focus();
+                summonerNameInput.keypress(function(e) {
+                    if (e.which == 13 && checkSummonerName()) {
+                        search();
+                    }
+                });
+                checkSummonerName();
+            });
+        </script>
+    </body>
+
+</html>

@@ -1,6 +1,10 @@
+//FIXME: if past season, check persistence or cache first
+
 var riot = require('./riot')(process.env.RIOT_API_KEY);
 var cacheManager = require('./cache-manager')
 var persistenceManager = null; //FIXME: it was a past season, then persist it
+
+//FIXME: if 404, may not want to evict it so fast, if 403 log notify fatal error , etc
 
 var self = module.exports = {
     getSummoner: function(region, name) {

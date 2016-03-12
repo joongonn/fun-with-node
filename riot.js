@@ -6,13 +6,16 @@ module.exports = function(apiKey) {
         throw new Error('Riot API key must be provided');
     }
 
-    const host = 'https://na.api.pvp.net'; //FIXME: region?
+    const hosts = {
+        'NA' : 'https://na.api.pvp.net',
+        'KR' : 'https://kr.api.pvp.net'
+    }
 
     return {
         getSummonerByName: function(region, name) {
             const version = 1.4;
             var options = {
-                uri: host + `/api/lol/${region}/v${version}/summoner/by-name/${name}?api_key=${apiKey}`,
+                uri: hosts[region] + `/api/lol/${region}/v${version}/summoner/by-name/${name}?api_key=${apiKey}`,
                 json: true
             };
             console.log(`Calling Riot for [getSummonerByName] at [${options.uri}] ...`);
@@ -22,7 +25,7 @@ module.exports = function(apiKey) {
         getSummonerSummary: function(region, season, summonerId) {
             const version = 1.3;
             var options = {
-                uri: host + `/api/lol/${region}/v${version}/stats/by-summoner/${summonerId}/summary?season=${season}&api_key=${apiKey}`,
+                uri: hosts[region] + `/api/lol/${region}/v${version}/stats/by-summoner/${summonerId}/summary?season=${season}&api_key=${apiKey}`,
                 json: true
             };
             console.log(`Calling Riot for [getSummonerSummary] at [${options.uri}] ...`);

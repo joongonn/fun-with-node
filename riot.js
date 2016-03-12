@@ -12,7 +12,7 @@ module.exports = function(apiKey) {
     }
 
     return {
-        getSummonerByName: function(region, name) { //FIXME: batched query
+        getSummonerByName: function(region, name) { //FIXME: batched query (names), tolowercase the name
             const version = 1.4;
             var options = {
                 uri: hosts[region] + `/api/lol/${region}/v${version}/summoner/by-name/${name}?api_key=${apiKey}`,

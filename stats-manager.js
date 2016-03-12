@@ -6,6 +6,11 @@ var persistenceManager = null; //FIXME: it was a past season, then persist it
 
 //FIXME: if 404, may not want to evict it so fast, if 403 log notify fatal error , etc
 
+function setRefreshedDate(obj) {
+   obj.$refreshDate = (new Date).getTime();
+   return obj;
+}
+
 var self = module.exports = {
     getSummoner: function(region, name) {
         var cacheKey = `/${region}/${name}`;
@@ -14,7 +19,7 @@ var self = module.exports = {
         if (cached) {
             return cached;
         } else {
-            var promise = riot.getSummonerByName(region, name);
+            var promise = riot.getSummonerByName(region, name).then(setRefreshedDate);
             cacheManager.set(cacheKey, promise.catch(err => cacheManager.evict(cacheKey)));
             return promise;
         }
@@ -29,6 +34,7 @@ var self = module.exports = {
         } else {
             var promise = self.getSummoner(region, name)
                               .then(summoner => riot.getSummonerSummary(region, season, summoner.id)
+                                                    .then(setRefreshedDate)
                                                     .then(summary => ({
                                                          summoner: summoner,
                                                          season: season,

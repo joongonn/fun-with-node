@@ -37,15 +37,17 @@
 
         <script>
             function refreshSummoner() {
-                var button = $('#refreshSummoner');
+                console.log("Rreffeasdsad");
+                var disableButton = function(disable) { $('#refreshSummoner').prop('disabled', disable); };
                 var currentPath = $(location).attr('pathname');
 
-                button.prop('disabled', true);
+                disableButton(true);
                 $.get(`${currentPath}/refresh`, function(data) {
                     location.reload();
+                    disableButton(false);
                 }).fail(function(error) {
                     alert('Error updating summoner');
-                    button.prop('disabled', false);
+                    disableButton(false);
                 });
             }
         </script>

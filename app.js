@@ -1,3 +1,5 @@
+//FIXME: log all 500 errors
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');

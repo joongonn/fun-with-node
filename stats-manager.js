@@ -1,3 +1,4 @@
+//Decides whether or not to auto refresh here
 //FIXME: if past season, check persistence or cache first
 
 var riot = require('./riot')(process.env.RIOT_API_KEY);
@@ -12,9 +13,9 @@ function setRefreshedDate(obj) {
 }
 
 var self = module.exports = {
-    getSummoner: function(region, name) {
+    getSummoner: function(region, name, forceRefresh) {
         var cacheKey = `/${region}/${name}`;
-        var cached = cacheManager.get(cacheKey);
+        var cached = !forceRefresh && cacheManager.get(cacheKey);
 
         if (cached) {
             return cached;
@@ -25,14 +26,14 @@ var self = module.exports = {
         }
     },
 
-    getSummonerSummary: function(region, season, name) {
+    getSummonerSummary: function(region, season, name, forceRefresh) {
         var cacheKey = `/${region}/${name}/summary/${season}`;
-        var cached = cacheManager.get(cacheKey);
+        var cached = !forceRefresh && cacheManager.get(cacheKey);
 
-        if (cached) {
+        if (cached) { //TODO: check cache age against configured
             return cached;
         } else {
-            var promise = self.getSummoner(region, name)
+            var promise = self.getSummoner(region, name, forceRefresh)
                               .then(summoner => riot.getSummonerSummary(region, season, summoner.id)
                                                     .then(setRefreshedDate)
                                                     .then(summary => {

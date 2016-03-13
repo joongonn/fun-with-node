@@ -1,20 +1,32 @@
 var express = require('express');
 var router = express.Router();
+var humanizeDuration = require('humanize-duration')
 
 var statsManager = require('../stats-manager.js');
+
+const season = 'SEASON2016'; //FIXME: global const this?
 
 router.get('/:region/:name', function(req, res, next) {
     var region = req.params.region;
     var name = req.params.name;
-    var season = 'SEASON2016'; //FIXME: global const this
-    
+
     statsManager.getSummonerSummary(region, season, name)
                 .then(summary => res.render('summoner', {
+                     humanizeDuration: humanizeDuration, //TODO: way to register functions globally?
                      season: season,
                      summoner: summary.summoner,
                      summary: summary.summary
                  }))
                 .catch(next);
+});
+
+router.get('/:region/:name/refresh', function(req, res, next) {
+    var region = req.params.region;
+    var name = req.params.name;
+
+    //TODO: this can return raw json data to the browser instead, for in-place view update
+    statsManager.getSummonerSummary(region, season, name, true)
+                .then(summary => res.sendStatus(204));
 });
 
 module.exports = router;

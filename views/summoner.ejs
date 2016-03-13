@@ -35,5 +35,13 @@
             </div>
         </div>
 
+        <script>
+            function refreshSummoner() {
+                var currentPath = $(location).attr('pathname');
+                $.get(`${currentPath}/refresh`, function(data) {
+                    location.reload();
+                }).fail(function(error) { alert('Error updating summoner'); });
+            }
+        </script>
     </body>
 </html>

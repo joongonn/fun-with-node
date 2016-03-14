@@ -14,7 +14,7 @@ router.get('/:region/:name', function(req, res, next) {
 
     statsManager.getSummonerSummary(region, season, name)
                 .then(summary => res.render('summoner', {
-                     humanizeDuration: humanizeDuration, //TODO: way to register functions globally?
+                     humanizeDuration: humanizeDuration, //TODO: way to register view functions globally?
                      season: season,
                      summoner: summary.summoner,
                      summary: summary.summary

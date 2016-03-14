@@ -1,3 +1,4 @@
+// CONFIGURATION: http://dailyjs.com/2014/01/02/recipe-for-express-configuration/
 //FIXME: log all 500 errors
 //FIXME: prime all the static assets eg. profile icons
 var express = require('express');

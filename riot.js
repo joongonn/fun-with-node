@@ -1,15 +1,26 @@
 var logger = require('./logger');
-var rp = require('request-promise');
+var rp = require('request-promise'); // https://github.com/request/request-promise
+var errors = require('request-promise/errors');
 
 const HOSTS = {
-    'NA' : 'https://naz.api.pvp.net', //FIXME: this assumes same version across all regions
+    'NA' : 'https://na.api.pvp.net', //FIXME: this assumes same version across all regions
     'KR' : 'https://kr.api.pvp.net'
 };
 
 
 function handleError(err) {
-    // https://github.com/request/request-promise
-    //FIXME: wrap and inform stats/view layer on what to do (retry soon, give up, or NO SUCH PLAYER)
+    if (err instanceof errors.RequestError) {
+        // eg. networking error
+
+    } else if (err instanceof errors.StatusCodeError) {
+        //TODO: handle nicely, wrap, etc
+        switch (err.statusCode) {
+            case 404: throw new Error('No such summoner/statistic');
+            case 429: throw new Error('Exceeded API limit, try again later');
+            // etc
+        }
+    }
+
     throw err;
 }
 

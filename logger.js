@@ -1,3 +1,4 @@
+//FIXME: injected, centralized config
 var winston = require('winston');
 
 function formatter(args) {

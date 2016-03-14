@@ -1,5 +1,7 @@
+//FIXME: when remote is down, retries
 //Decides whether or not to auto refresh here
 //FIXME: if past season, check persistence or cache first
+//HOT: players (precache)
 
 var riot = require('./riot')(process.env.RIOT_API_KEY);
 var cacheManager = require('./cache-manager')
@@ -26,6 +28,7 @@ var self = module.exports = {
         }
     },
 
+    //FIXME: Can be null
     getSummonerSummary: function(region, season, name, forceRefresh) {
         var cacheKey = `/${region}/${name}/summary/${season}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);

@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router();
 var humanizeDuration = require('humanize-duration')
 
-var statsManager = require('../stats-manager.js');
+var logger = require('../logger');
+
+var statsManager = require('../stats-manager');
 
 const season = 'SEASON2016'; //FIXME: global const this?
 

@@ -6,6 +6,8 @@
 var logger = require('./logger');
 var riot = require('./riot')(process.env.RIOT_API_KEY);
 var cacheManager = require('./cache-manager')
+var _ = require("underscore");
+
 var persistenceManager = null; //FIXME: it was a past season, then persist it
 
 //FIXME: if 404, may not want to evict it so fast, if 403 log notify fatal error , etc
@@ -24,19 +26,29 @@ function evict(cacheKey, err) {
 }
 
 var self = module.exports = {
-    getStaticDataChampions: function(region, forceRefresh) {
+    //FIXME: client can ask for a championId that does not exist here?
+    getStaticDataChampionsLookup: function(region, forceRefresh) {
         var cacheKey = `/static-data/${region}/champion`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
 
         if (cached) {
             return cached;
         } else {
-            var champions = riot.getStaticDataChampions(region)
-                                .then(setRefreshedDate)
-                                .catch(err => evict(cacheKey, err));
+            var championsLookup = riot.getStaticDataChampions(region)
+                                      .then(results => {
+                                           var champions = _.values(results.data);
+                                           var championsById = _.reduce(champions, (z, champion) => {
+                                               z[champion.id] = champion;
+                                               return z;
+                                           }, {});
+                                           championsById.get = id => championsById[id.toString()];
+                                           return championsById;
+                                       })
+                                      .then(setRefreshedDate)
+                                      .catch(err => evict(cacheKey, err));
 
-            cacheManager.set(cacheKey, champions);
-            return champions;
+            cacheManager.set(cacheKey, championsLookup);
+            return championsLookup;
         }
     },
 
@@ -107,15 +119,17 @@ var self = module.exports = {
                                 var all = Promise.all([
                                     self.getStatsSummary(region, season, id, forceRefresh),
                                     self.getStatsRanked(region, season, id, forceRefresh),
-                                    self.getStaticDataChampions(region)
+                                    self.getStaticDataChampionsLookup(region)
                                 ]);
 
                                 return all.then(values => ({
                                                summoner: summoner,
                                                summary: values[0],
                                                ranked: values[1],
-                                               $season: season,
-                                               $champions: values[2]
+                                               season: season,
+                                               lookups: {
+                                                   champions: values[2]
+                                               }
                                            }));
                             })
                            .then(setRefreshedDate)

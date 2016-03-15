@@ -18,7 +18,8 @@ router.get('/:region/:name', function(req, res, next) {
                     season: season,
                     summoner: full.summoner,
                     summary: full.summary,
-                    ranked: full.ranked
+                    ranked: full.ranked,
+                    lookups: full.lookups
                  }))
                 .catch(next);
 });

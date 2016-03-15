@@ -1,0 +1,33 @@
+<% if (ranked && ranked.champions) { %>
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th colspan="2">Champion</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Champion Kills</th>
+                <th>Deaths Per Session</th>
+                <th>Assists</th>
+                <th>Minion Kills</th>
+            </tr>
+            </thead>
+            <% ranked.champions.forEach((champion, i) => { var championData = lookups.champions.get(champion.id); %>
+                <% if (championData) { %>
+                    <tr>
+                        <td><img style="width: 32px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=championData.key%>.png"></td>
+                        <td><%= championData.name %></td>
+                        <td><%= champion.stats.totalSessionsWon %></td>
+                        <td><%= champion.stats.totalSessionsLost %></td>
+                        <td><%= champion.stats.totalChampionKills %></td>
+                        <td><%= champion.stats.totalDeathsPerSession %></td>
+                        <td><%= champion.stats.totalAssists %></td>
+                        <td><%= champion.stats.totalMinionKills %></td>
+                    </tr>
+                <% } %>
+            <% }) %>
+        </table>
+    </div>
+<% } else { %>
+    <div>No summary</div>
+<% } %>

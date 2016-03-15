@@ -22,15 +22,15 @@
 
             <div class="row">
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#summary" data-toggle="tab" class="bold">Summary (<%=summary.$season%>)</a></li>
-                    <li role="presentation"><a href="#TODO" data-toggle="tab" class="bold">TODO</a></li>
+                    <li role="presentation" class="active"><a href="#summary" data-toggle="tab" class="bold">Summary (<%=season%>)</a></li>
+                    <li role="presentation"><a href="#ranked" data-toggle="tab" class="bold">Ranked (<%=season%>)</a></li>
                 </ul>
             </div>
 
             <div class="row">
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="summary"><% include summoner/summary.v13.ejs %></div>
-                    <div role="tabpanel" class="tab-pane" id="TODO">2</div>
+                    <div role="tabpanel" class="tab-pane" id="ranked"><%= ranked %></div>
                 </div>
             </div>
         </div>

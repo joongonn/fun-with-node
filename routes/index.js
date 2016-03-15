@@ -4,7 +4,7 @@ var router = express.Router();
 var statsManager = require('../stats-manager.js');
 
 router.get('/', function(req, res, next) {
-    var regions = ['NA', 'KR']; //FIXME: global consts
+    var regions = ['na', 'kr']; //FIXME: global consts
     res.render('index', { regions: regions });
 });
 

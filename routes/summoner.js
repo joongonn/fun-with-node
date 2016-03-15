@@ -12,12 +12,13 @@ router.get('/:region/:name', function(req, res, next) {
     var region = req.params.region;
     var name = req.params.name;
 
-    statsManager.getSummonerSummary(region, season, name)
-                .then(summary => res.render('summoner', {
-                     humanizeDuration: humanizeDuration, //TODO: way to register view functions globally?
-                     season: season,
-                     summoner: summary.summoner,
-                     summary: summary.summary
+    statsManager.getSummonerFull(region, season, name)
+                .then(full => res.render('summoner', {
+                    humanizeDuration: humanizeDuration, //TODO: way to register view functions globally?
+                    season: season,
+                    summoner: full.summoner,
+                    summary: full.summary,
+                    ranked: full.ranked
                  }))
                 .catch(next);
 });
@@ -27,7 +28,7 @@ router.get('/:region/:name/refresh', function(req, res, next) {
     var name = req.params.name;
 
     //TODO: this can return raw json data to the browser instead, for in-place view update
-    statsManager.getSummonerSummary(region, season, name, true)
+    statsManager.getSummonerFull(region, season, name, true)
                 .then(summary => res.sendStatus(204));
 });
 

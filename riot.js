@@ -1,3 +1,4 @@
+//TODO: request batching/coalescing
 var logger = require('./logger');
 var rp = require('request-promise'); // https://github.com/request/request-promise
 var errors = require('request-promise/errors');
@@ -79,6 +80,18 @@ module.exports = function(apiKey) {
                 json: true
             };
             var call = `getStatsRanked(${region}, ${season}, ${summonerId})`;
+            logger.debug(`Calling Riot for [${call}] at [${options.uri}] ...`);
+            
+            return rp(options).catch(handleError(call));
+        },
+
+        getGameRecent: function(region, summonerId) {
+            const version = 1.3;
+            var options = {
+                uri: `${HOSTS[region]}/api/lol/${region}/v${version}/game/by-summoner/${summonerId}/recent?api_key=${apiKey}`,
+                json: true
+            };
+            var call = `getGameRecent(${region}, ${summonerId})`;
             logger.debug(`Calling Riot for [${call}] at [${options.uri}] ...`);
             
             return rp(options).catch(handleError(call));

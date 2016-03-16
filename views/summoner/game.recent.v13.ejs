@@ -1,0 +1,65 @@
+<div class="container-fluid">
+<% if (gameRecent) {
+    gameRecent.forEach((game, i) => {
+            var myChampionData = lookups.champions.get(game.championId);
+    %>
+        <div class="row well well-sm">
+            <div class="col-md-4">
+                <p style="margin: 0"><b><%= game.gameMode %></b> - <%= humanizeDuration(new Date().getTime() - game.createDate, { units: ['d', 'h', 'm'], round: true }) %> ago</p>
+                <div class="media bordered bgwhite" style="margin-top: 0">
+                    <div class="media-left">
+                        <img style="width: 80px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=myChampionData.key%>.png" class="media-object">
+                    </div>
+                    <div class="media-body">
+                        <h3 class="media-heading"><%= myChampionData.name %></h3>
+                        <p><b>Level</b> <%= game.stats.level %></p>
+                        <p><b>Champions Killed</b>: <%= game.stats.championsKilled %></p>
+                        <p><b>Deaths</b>: <%= game.stats.numDeaths %></p>
+                        <p><b>Assists</b>: <%= game.stats.assists %></p>
+                        <p><b>Minions Killed</b>: <%= game.stats.minionsKilled %></p>
+                    </div>
+                </div>
+
+                <ul>
+            </div>
+
+            <% if (game.$fellowPlayers.teams.length >=2) { %>
+                <div class="col-md-8">
+                    <div align="right"><%= humanizeDuration(game.stats.timePlayed * 1000) %></div>
+                    <div class="bordered bgwhite row">
+                        <div class="col-md-6">
+                            <div class="bordered">
+                                <% game.$fellowPlayers.teams[0].players.forEach(player => { var championData = lookups.champions.get(player.championId); %>
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <img style="width: 32px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=championData.key%>.png" class="media-object">
+                                        </div>
+                                        <div class="media-body">
+                                            <span class="media-heading"><b>SummonerId: <%= player.summonerId %></b></span>
+                                            <p><%= championData.name %></p>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bordered">
+                                <% game.$fellowPlayers.teams[1].players.forEach(player => { var championData = lookups.champions.get(player.championId); %>
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <img style="width: 32px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=championData.key%>.png" class="media-object">
+                                        </div>
+                                        <div class="media-body">
+                                            <span class="media-heading"><b>SummonerId: <%= player.summonerId %></b></span>
+                                            <p><%= championData.name %></p>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+<% })} %>
+</div>

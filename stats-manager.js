@@ -101,6 +101,43 @@ var self = module.exports = {
         }
     },
 
+    //TODO: Games can be persisted.
+    getGameRecent: function(region, summonerId, forceRefresh) {
+        var cacheKey = `/game/recent/${region}/${summonerId}`;
+        var cached = !forceRefresh && cacheManager.get(cacheKey);
+
+        if (cached) {
+            return cached;
+        } else {
+            // process 'fellowPlayers' into teams
+            var process = function(resp) {
+                _.each(resp.games, game => {
+                    var fellowPlayers = game.fellowPlayers;
+                    var playersByTeamId = _.groupBy(fellowPlayers, player => player.teamId);
+                    playersByTeamId = _.mapObject(playersByTeamId, (players, teamId) => {
+                        return _.map(players, player => ({ summonerId: player.summonerId, championId: player.championId }));
+                    });
+                    var teams = _.map(_.pairs(playersByTeamId), pair => ({ teamId: pair[0], players: pair[1] }));
+
+                    game.$fellowPlayers = {
+                      summonerIds: _.map(fellowPlayers, player => player.summonerId),
+                      teams: teams
+                    };
+                });
+
+                return resp.games;
+            };
+
+            var gameRecent = riot.getGameRecent(region, summonerId)
+                                 .then(setRefreshedDate)
+                                 .then(process)
+                                 .catch(err => evict(cacheKey, err));
+
+            cacheManager.set(cacheKey, gameRecent);
+            return gameRecent;
+        }
+    },
+
     getSummonerFull: function(region, season, name, forceRefresh) {
         var cacheKey = `/full/${region}/${name}/summary/${season}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
@@ -117,18 +154,20 @@ var self = module.exports = {
                                 var id = summoner.id;
                                 // Parallel outgoing requests (TODO: outgoing pool size?)
                                 var all = Promise.all([
+                                    self.getStaticDataChampionsLookup(region),
                                     self.getStatsSummary(region, season, id, forceRefresh),
                                     self.getStatsRanked(region, season, id, forceRefresh),
-                                    self.getStaticDataChampionsLookup(region)
+                                    self.getGameRecent(region, id, forceRefresh)
                                 ]);
 
                                 return all.then(values => ({
                                                summoner: summoner,
-                                               summary: values[0],
-                                               ranked: values[1],
+                                               summary: values[1],
+                                               ranked: values[2],
+                                               gameRecent: values[3],
                                                season: season,
                                                lookups: {
-                                                   champions: values[2]
+                                                   champions: values[0]
                                                }
                                            }));
                             })

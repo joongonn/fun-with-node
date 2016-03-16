@@ -18,6 +18,7 @@ router.get('/:region/:name', function(req, res, next) {
                     season: season,
                     summoner: full.summoner,
                     summary: full.summary,
+                    gameRecent: full.gameRecent,
                     ranked: full.ranked,
                     lookups: full.lookups
                  }))

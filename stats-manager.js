@@ -117,7 +117,17 @@ var self = module.exports = {
                     playersByTeamId = _.mapObject(playersByTeamId, (players, teamId) => {
                         return _.map(players, player => ({ summonerId: player.summonerId, championId: player.championId }));
                     });
-                    var teams = _.map(_.pairs(playersByTeamId), pair => ({ teamId: pair[0], players: pair[1] }));
+                    var teams = _.map(_.pairs(playersByTeamId), pair => ({ teamId: parseInt(pair[0]), players: pair[1] }));
+                    // add self into team
+                    var myTeamId = game.stats.team;
+                    var myTeam = _.find(teams, team => team.teamId == myTeamId);
+                    var me = { summonerId: resp.summonerId, championId: game.championId };
+                    if (myTeam) {
+                        myTeam.players.push(me);
+                    } else {
+                        // 1-v-1 ? push myself into a new team
+                        teams.push({ teamId: myTeamId, players: [ me ] });
+                    }
 
                     game.$fellowPlayers = {
                       summonerIds: _.map(fellowPlayers, player => player.summonerId),
@@ -125,7 +135,11 @@ var self = module.exports = {
                     };
                 });
 
-                return resp.games;
+                // all unique summonerIds seen
+                resp.$summonerIds = _.uniq(_.flatten(_.map(resp.games, game => game.$fellowPlayers.summonerIds)));
+                resp.$summonerIds.sort();
+
+                return resp;
             };
 
             var gameRecent = riot.getGameRecent(region, summonerId)
@@ -158,6 +172,10 @@ var self = module.exports = {
                                     self.getStatsSummary(region, season, id, forceRefresh),
                                     self.getStatsRanked(region, season, id, forceRefresh),
                                     self.getGameRecent(region, id, forceRefresh)
+                                        .then(games => {
+                                              //FIXME: Need to pull summonersLookup for names of fellowplayers
+                                             return games;
+                                         })
                                 ]);
 
                                 return all.then(values => ({

@@ -1,6 +1,7 @@
 <div class="container-fluid">
-<% if (gameRecent) {
-    gameRecent.forEach((game, i) => {
+
+<% if (gameRecent.games) {
+    gameRecent.games.forEach((game, i) => {
             var myChampionData = lookups.champions.get(game.championId);
     %>
         <div class="row well well-sm">

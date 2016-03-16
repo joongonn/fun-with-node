@@ -48,6 +48,20 @@ module.exports = function(apiKey) {
             return rp(options).catch(handleError(call));
         },
 
+        getSummonerNames: function(region, summonerIds) {
+            //FIXME: max of 40, needs to split here
+            const version = 1.4;
+            summonerIds = summonerIds.join(); // to csv
+            var options = {
+                uri: `${HOSTS[region]}/api/lol/${region}/v${version}/summoner/${summonerIds}?api_key=${apiKey}`,
+                json: true
+            };
+            var call = `getSummonerNames(${region}, ${summonerIds})`;
+            logger.debug(`Calling Riot for [${call}] at [${options.uri}] ...`);
+
+            return rp(options).catch(handleError(call));
+        },
+
         getSummonerByName: function(region, name) { //FIXME: batched query (names), tolowercase the name
             const version = 1.4;
             var options = {

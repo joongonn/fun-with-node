@@ -120,14 +120,17 @@ var self = module.exports = {
                     var teams = _.map(_.pairs(playersByTeamId), pair => ({ teamId: parseInt(pair[0]), players: pair[1] }));
                     // add self into team
                     var myTeamId = game.stats.team;
+                    var myTeamWon = game.stats.win;
                     var myTeam = _.find(teams, team => team.teamId == myTeamId);
                     var me = { summonerId: resp.summonerId, championId: game.championId };
                     if (myTeam) {
                         myTeam.players.push(me);
                     } else {
                         // 1-v-1 ? push myself into a new team
-                        teams.push({ teamId: myTeamId, players: [ me ] });
+                        myTeam = { teamId: myTeamId, players: [ me ] };
+                        teams.push(myTeam);
                     }
+                    _.each(teams, team => team.win = (team.teamId == myTeamId) ? myTeamWon : !myTeamWon);
 
                     game.$fellowPlayers = {
                       summonerIds: _.map(fellowPlayers, player => player.summonerId),
@@ -152,6 +155,10 @@ var self = module.exports = {
         }
     },
 
+    getSummonerNames: function(region, summonerIds) { //FIXME: forceRefresh
+        console.log("FIXME: Get summoerNames for: " + summonerIds.join());
+    },
+
     getSummonerFull: function(region, season, name, forceRefresh) {
         var cacheKey = `/full/${region}/${name}/summary/${season}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
@@ -172,9 +179,10 @@ var self = module.exports = {
                                     self.getStatsSummary(region, season, id, forceRefresh),
                                     self.getStatsRanked(region, season, id, forceRefresh),
                                     self.getGameRecent(region, id, forceRefresh)
-                                        .then(games => {
+                                        .then(gameRecent => {
+                                             self.getSummonerNames(region, gameRecent.$summonerIds);
                                               //FIXME: Need to pull summonersLookup for names of fellowplayers
-                                             return games;
+                                             return gameRecent;
                                          })
                                 ]);
 

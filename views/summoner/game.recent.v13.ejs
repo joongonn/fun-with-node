@@ -29,6 +29,7 @@
                     <div align="right"><%= humanizeDuration(game.stats.timePlayed * 1000) %></div>
                     <div class="bordered bgwhite row">
                         <div class="col-md-6">
+                            <div align="right"><% if (game.$fellowPlayers.teams[0].win) { %><span class="victory">Victory</span><% } else { %><span class="defeat">Defeat</span><% } %></div>
                             <div class="bordered">
                                 <% game.$fellowPlayers.teams[0].players.forEach(player => { var championData = lookups.champions.get(player.championId); %>
                                     <div class="media">
@@ -44,6 +45,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <div align="right"><% if (game.$fellowPlayers.teams[1].win) { %><span class="victory">Victory</span><% } else { %><span class="defeat">Defeat</span><% } %></div>
                             <div class="bordered">
                                 <% game.$fellowPlayers.teams[1].players.forEach(player => { var championData = lookups.champions.get(player.championId); %>
                                     <div class="media">

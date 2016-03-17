@@ -29,7 +29,7 @@ var self = module.exports = {
     //FIXME: client can ask for a championId that does not exist here?
     getStaticDataChampionsLookup: function(region, forceRefresh) {
         var cacheKey = `/lol/static-data/${region}/champion`;
-        var cached = !forceRefresh && cacheManager.get(cacheKey);
+        var cached = forceRefresh ? null : cacheManager.get(cacheKey);
 
         if (cached) {
             return cached;
@@ -56,7 +56,7 @@ var self = module.exports = {
         var name = name.toLowerCase().replace(/\s/g, ''); // Eh, undocumented behavior.
 
         var cacheKey = `/lol/summoner/${region}/${name}`;
-        var cached = !forceRefresh && cacheManager.get(cacheKey);
+        var cached = forceRefresh ? null : cacheManager.get(cacheKey);
 
         if (cached) {
             return cached;
@@ -72,7 +72,7 @@ var self = module.exports = {
 
     getStatsSummary: function(region, season, summonerId, forceRefresh) {
         var cacheKey = `/lol/stats/summary/${region}/${summonerId}/${season}`;
-        var cached = !forceRefresh && cacheManager.get(cacheKey);
+        var cached = forceRefresh ? null : cacheManager.get(cacheKey);
 
         if (cached) {
             return cached;
@@ -88,7 +88,7 @@ var self = module.exports = {
 
     getStatsRanked: function(region, season, summonerId, forceRefresh) {
         var cacheKey = `/lol/stats/ranked/${region}/${summonerId}/summary/${season}`;
-        var cached = !forceRefresh && cacheManager.get(cacheKey);
+        var cached = forceRefresh ? null : cacheManager.get(cacheKey);
 
         if (cached) {
             return cached;
@@ -105,7 +105,7 @@ var self = module.exports = {
     //TODO: Games can be persisted.
     getGameRecent: function(region, summonerId, forceRefresh) {
         var cacheKey = `/lol/game/recent/${region}/${summonerId}`;
-        var cached = !forceRefresh && cacheManager.get(cacheKey);
+        var cached = forceRefresh ? null : cacheManager.get(cacheKey);
 
         if (cached) {
             return cached;
@@ -183,31 +183,36 @@ var self = module.exports = {
             }
         });
 
-        // Batch and fire outstanding summonerIds (groups of 40 ids)
-        var batches = [];
-        while (outstandingSummonerIds.length > 0) {
-            batches.push(outstandingSummonerIds.splice(0, 40));
-        }
+        if (outstandingSummonerIds.length > 0) {
+            // Batch and fire outstanding summonerIds (groups of 40 ids)
+            var batches = [];
+            while (outstandingSummonerIds.length > 0) {
+                batches.push(outstandingSummonerIds.splice(0, 40));
+            }
 
-        var gets = _.map(batches, batch => riot.getSummonerNames(region, batch)
-                                               .then(names => {
-                                                    // Eagerly stick the resolved names into cache upon completion of batch
-                                                    _.each(_.pairs(names), pair => cacheManager.set(getCacheKey(pair[0], pair[1])));
-                                                    return names;
-                                                }));
+            var gets = _.map(batches, batch => riot.getSummonerNames(region, batch)
+                                                   .then(names => {
+                                                        // Eagerly stick the resolved names into cache upon completion of batch
+                                                        _.each(_.pairs(names), pair => cacheManager.set(getCacheKey(pair[0]), pair[1]));
+                                                        return names;
+                                                    }));
 
-        var getSummonerNames = Promise.all(gets)
-                                      .then(values => _.reduce(values, (z, value) => {
-                                           _.each(value, (v, k) => z[k] = v);
-                                           return z;
-                                       }, {}));
+            var getSummonerNames = Promise.all(gets)
+                                          .then(values => _.reduce(values, (z, value) => {
+                                               _.each(value, (v, k) => z[k] = v);
+                                               return z;
+                                           }, namesById));
 
-        return getSummonerNames;
+            return getSummonerNames;
+          } else {
+              // fulfil from cache
+              return Promise.resolve(namesById);
+          }
     },
 
     getSummonerFull: function(region, season, name, forceRefresh) {
         var cacheKey = `/full/${region}/${name}/${season}`;
-        var cached = !forceRefresh && cacheManager.get(cacheKey);
+        var cached = forceRefresh ? null : cacheManager.get(cacheKey);
 
         if (cached) {
             return cached;

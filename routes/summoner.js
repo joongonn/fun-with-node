@@ -29,7 +29,7 @@ router.get('/:region/:name/json', function(req, res, next) {
     var region = req.params.region;
     var name = req.params.name;
 
-    statsManager.getSummonerFull(region, season, name, true)
+    statsManager.getSummonerFull(region, season, name)
                 .then(full => res.json(full))
                 .catch(next);
 });

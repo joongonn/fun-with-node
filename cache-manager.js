@@ -1,3 +1,5 @@
+var _ = require("underscore");
+
 //TODO: LRU this thing
 var processCache = { //FIXME: contains promises; BUT what if it's a centrally backed Redis Cache
   // key: promise 
@@ -7,9 +9,17 @@ var processCache = { //FIXME: contains promises; BUT what if it's a centrally ba
 
 // Distributed, non-transactional cache
 
-module.exports = {
+var self = module.exports = {
     get: function(cacheKey) {
-        return processCache[cacheKey];
+        return processCache[cacheKey]; //TODO: undefined vs null
+    },
+
+    getMany: function(cacheKeys) {
+        //TODO: real batching
+        var results ={};
+        _.each(cacheKeys, key => results[key] = self.get(key));
+
+        return results;
     },
 
     set: function(cacheKey, thing) {

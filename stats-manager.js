@@ -53,6 +53,8 @@ var self = module.exports = {
     },
 
     getSummoner: function(region, name, forceRefresh) {
+        var name = name.toLowerCase().replace(/\s/g, ''); // Eh, undocumented behavior.
+
         var cacheKey = `/summoner/${region}/${name}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
 
@@ -84,7 +86,6 @@ var self = module.exports = {
         }
     },
 
-    //FIXME: **** how to deal with NO-stats (legitimate 404s)
     getStatsRanked: function(region, season, summonerId, forceRefresh) {
         var cacheKey = `/ranked/${region}/${summonerId}/summary/${season}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
@@ -111,6 +112,11 @@ var self = module.exports = {
         } else {
             // process 'fellowPlayers' into teams
             var process = function(resp) {
+                if (!resp) {
+                    return null; // no recent games
+                }
+
+                var mySummonerId = resp.summonerId;
                 _.each(resp.games, game => {
                     var fellowPlayers = game.fellowPlayers;
                     var playersByTeamId = _.groupBy(fellowPlayers, player => player.teamId);
@@ -122,7 +128,7 @@ var self = module.exports = {
                     var myTeamId = game.stats.team;
                     var myTeamWon = game.stats.win;
                     var myTeam = _.find(teams, team => team.teamId == myTeamId);
-                    var me = { summonerId: resp.summonerId, championId: game.championId };
+                    var me = { summonerId: mySummonerId, championId: game.championId };
                     if (myTeam) {
                         myTeam.players.push(me);
                     } else {
@@ -139,8 +145,10 @@ var self = module.exports = {
                 });
 
                 // all unique summonerIds seen
-                resp.$summonerIds = _.uniq(_.flatten(_.map(resp.games, game => game.$fellowPlayers.summonerIds)));
-                resp.$summonerIds.sort();
+                var allSummonerIds = _.uniq(_.flatten(_.map(resp.games, game => game.$fellowPlayers.summonerIds)));
+                allSummonerIds.push(mySummonerId);
+                allSummonerIds.sort((a,b) => a - b);
+                resp.$summonerIds = allSummonerIds;
 
                 return resp;
             };
@@ -156,11 +164,49 @@ var self = module.exports = {
     },
 
     getSummonerNames: function(region, summonerIds) { //FIXME: forceRefresh
-        console.log("FIXME: Get summoerNames for: " + summonerIds.join());
+        var getCacheKey = summonerId => `/summonerName/${summonerId}`;
+
+        var cacheKeysBySummonerId = _.reduce(summonerIds, (z, id) => { z[id] = getCacheKey(id); return z; }, {});
+        var cacheKeys = _.values(cacheKeysBySummonerId);
+        var namesByCacheKeys = cacheManager.getMany(cacheKeys);
+
+        // Which of these summonerIds we already have (in cache)?
+        var outstandingSummonerIds = [];
+        var namesById = {};
+        _.each(summonerIds, id => {
+            var idStr = id.toString();
+            var cachedName = namesByCacheKeys[cacheKeysBySummonerId[idStr]];
+            if (cachedName) {
+                namesById[idStr] = cachedName;
+            } else {
+                outstandingSummonerIds.push(id);
+            }
+        });
+
+        // Batch and fire outstanding summonerIds (groups of 40 ids)
+        var batches = [];
+        while (outstandingSummonerIds.length > 0) {
+            batches.push(outstandingSummonerIds.splice(0, 40));
+        }
+
+        var gets = _.map(batches, batch => riot.getSummonerNames(region, batch)
+                                               .then(names => {
+                                                    // Eagerly stick the resolved names into cache upon completion of batch
+                                                    _.each(_.pairs(names), pair => cacheManager.set(getCacheKey(pair[0], pair[1])));
+                                                    return names;
+                                                }));
+
+        var getSummonerNames = Promise.all(gets)
+                                      .then(values => _.reduce(values, (z, value) => {
+                                           _.each(value, (v, k) => z[k] = v);
+                                           return z;
+                                       }, {}));
+
+        return getSummonerNames;
     },
 
     getSummonerFull: function(region, season, name, forceRefresh) {
-        var cacheKey = `/full/${region}/${name}/summary/${season}`;
+        var cacheKey = `/full/${region}/${name}/${season}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
 
         if (cached) {
@@ -180,9 +226,19 @@ var self = module.exports = {
                                     self.getStatsRanked(region, season, id, forceRefresh),
                                     self.getGameRecent(region, id, forceRefresh)
                                         .then(gameRecent => {
-                                             self.getSummonerNames(region, gameRecent.$summonerIds);
-                                              //FIXME: Need to pull summonersLookup for names of fellowplayers
-                                             return gameRecent;
+                                             if (gameRecent) {
+                                                 return self.getSummonerNames(region, gameRecent.$summonerIds)
+                                                            .then(summonerNames => {
+                                                                 // Pull names of fellowplayers
+                                                                 gameRecent.$lookups = {
+                                                                     getSummonerNameById: id => summonerNames[id.toString()],
+                                                                     summonerNames: summonerNames
+                                                                 };
+                                                                 return gameRecent;
+                                                             });
+                                             } else {
+                                                 return null;
+                                             }
                                          })
                                 ]);
 

@@ -49,15 +49,14 @@ module.exports = function(apiKey) {
         },
 
         getSummonerNames: function(region, summonerIds) {
-            //FIXME: max of 40, needs to split here
             const version = 1.4;
-            summonerIds = summonerIds.join(); // to csv
+            summonerIdsPart = summonerIds.join(); // to csv
             var options = {
-                uri: `${HOSTS[region]}/api/lol/${region}/v${version}/summoner/${summonerIds}?api_key=${apiKey}`,
+                uri: `${HOSTS[region]}/api/lol/${region}/v${version}/summoner/${summonerIdsPart}/name?api_key=${apiKey}`,
                 json: true
             };
-            var call = `getSummonerNames(${region}, ${summonerIds})`;
-            logger.debug(`Calling Riot for [${call}] at [${options.uri}] ...`);
+            var call = `getSummonerNames(${region}, <${summonerIds.length} ids>)`;
+            logger.debug(`Calling Riot for [${call}] at [${options.uri.substring(0, 60)}...] ...`);
 
             return rp(options).catch(handleError(call));
         },

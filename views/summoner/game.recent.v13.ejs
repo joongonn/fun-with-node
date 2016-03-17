@@ -1,18 +1,17 @@
+<% if (gameRecent) { %>
 <div class="container-fluid">
-
-<% if (gameRecent.games) {
-    gameRecent.games.forEach((game, i) => {
+    <% gameRecent.games.forEach((game, i) => {
             var myChampionData = lookups.champions.get(game.championId);
     %>
         <div class="row well well-sm">
             <div class="col-md-4">
                 <p style="margin: 0"><b><%= game.gameMode %></b> - <%= humanizeDuration(new Date().getTime() - game.createDate, { units: ['d', 'h', 'm'], round: true }) %> ago</p>
-                <div class="media bordered bgwhite" style="margin-top: 0">
+                <div class="media bordered bgwhite" style="padding: 16px">
                     <div class="media-left">
                         <img style="width: 80px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=myChampionData.key%>.png" class="media-object">
                     </div>
                     <div class="media-body">
-                        <h3 class="media-heading"><%= myChampionData.name %></h3>
+                        <h4 class="media-heading"><%= myChampionData.name %></h4>
                         <p><b>Level</b> <%= game.stats.level %></p>
                         <p><b>Champions Killed</b>: <%= game.stats.championsKilled %></p>
                         <p><b>Deaths</b>: <%= game.stats.numDeaths %></p>
@@ -20,8 +19,6 @@
                         <p><b>Minions Killed</b>: <%= game.stats.minionsKilled %></p>
                     </div>
                 </div>
-
-                <ul>
             </div>
 
             <% if (game.$fellowPlayers.teams.length >=2) { %>
@@ -30,14 +27,17 @@
                     <div class="bordered bgwhite row">
                         <div class="col-md-6">
                             <div align="right"><% if (game.$fellowPlayers.teams[0].win) { %><span class="victory">Victory</span><% } else { %><span class="defeat">Defeat</span><% } %></div>
-                            <div class="bordered">
-                                <% game.$fellowPlayers.teams[0].players.forEach(player => { var championData = lookups.champions.get(player.championId); %>
-                                    <div class="media">
+                            <div class="<%= game.$fellowPlayers.teams[0].win ? 'bordered-victory' : 'bordered-defeat' %>">
+                                <% game.$fellowPlayers.teams[0].players.forEach(player => {
+                                       var championData = lookups.champions.get(player.championId);
+                                       var summonerName = gameRecent.$lookups.getSummonerNameById(player.summonerId);
+                                %>
+                                    <% if (player.summonerId == gameRecent.summonerId) { %><div class="media highlight"><% } else { %><div class="media"><% } %>
                                         <div class="media-left">
                                             <img style="width: 32px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=championData.key%>.png" class="media-object">
                                         </div>
                                         <div class="media-body">
-                                            <span class="media-heading"><b>SummonerId: <%= player.summonerId %></b></span>
+                                            <span class="media-heading"><b><a href="<%= summonerName %>"><%= summonerName %></a></b></span>
                                             <p><%= championData.name %></p>
                                         </div>
                                     </div>
@@ -46,14 +46,17 @@
                         </div>
                         <div class="col-md-6">
                             <div align="right"><% if (game.$fellowPlayers.teams[1].win) { %><span class="victory">Victory</span><% } else { %><span class="defeat">Defeat</span><% } %></div>
-                            <div class="bordered">
-                                <% game.$fellowPlayers.teams[1].players.forEach(player => { var championData = lookups.champions.get(player.championId); %>
-                                    <div class="media">
+                            <div class="<%= game.$fellowPlayers.teams[1].win ? 'bordered-victory' : 'bordered-defeat' %>">
+                                <% game.$fellowPlayers.teams[1].players.forEach(player => {
+                                       var championData = lookups.champions.get(player.championId);
+                                       var summonerName = gameRecent.$lookups.getSummonerNameById(player.summonerId);
+                                %>
+                                    <% if (player.summonerId == gameRecent.summonerId) { %><div class="media highlight"><% } else { %><div class="media"><% } %>
                                         <div class="media-left">
                                             <img style="width: 32px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=championData.key%>.png" class="media-object">
                                         </div>
                                         <div class="media-body">
-                                            <span class="media-heading"><b>SummonerId: <%= player.summonerId %></b></span>
+                                            <span class="media-heading"><b><a href="<%= summonerName %>"><%= summonerName %></a></b></span>
                                             <p><%= championData.name %></p>
                                         </div>
                                     </div>
@@ -64,5 +67,8 @@
                 </div>
             <% } %>
         </div>
-<% })} %>
+    <% }) %>
 </div>
+<% } else { %>
+No recent game.
+<% } %>

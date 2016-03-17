@@ -210,6 +210,22 @@ var self = module.exports = {
           }
     },
 
+    getMatch: function(region, matchId) {
+        var cacheKey = `/match/${matchId}`;
+        var cached = cacheManager.get(cacheKey);
+
+        if (cached) {
+            return cached;
+        } else {
+            var ranked = riot.getMatch(region, matchId)
+                             .then(setRefreshedDate)
+                             .catch(err => evict(cacheKey, err));
+
+            cacheManager.set(cacheKey, ranked);
+            return ranked;
+        }
+    },
+
     getSummonerFull: function(region, season, name, forceRefresh) {
         var cacheKey = `/full/${region}/${name}/${season}`;
         var cached = forceRefresh ? null : cacheManager.get(cacheKey);
@@ -235,6 +251,7 @@ var self = module.exports = {
                                                  return self.getSummonerNames(region, gameRecent.$summonerIds)
                                                             .then(summonerNames => {
                                                                  // Pull names of fellowplayers
+                                                                 gameRecent.$region = region;
                                                                  gameRecent.$lookups = {
                                                                      getSummonerNameById: id => summonerNames[id.toString()],
                                                                      summonerNames: summonerNames

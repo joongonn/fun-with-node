@@ -108,6 +108,18 @@ module.exports = function(apiKey) {
             logger.debug(`Calling Riot for [${call}] at [${options.uri}] ...`);
             
             return rp(options).catch(handleError(call));
+        },
+
+        getMatch: function(region, matchId) {
+            const version = 2.2;
+            var options = {
+                uri: `${HOSTS[region]}/api/lol/${region}/v${version}/match/${matchId}?api_key=${apiKey}`,
+                json: true
+            };
+            var call = `getMatch(${region}, ${matchId})`;
+            logger.debug(`Calling Riot for [${call}] at [${options.uri}] ...`);
+            
+            return rp(options).catch(handleError(call));
         }
     };
 }

@@ -27,9 +27,11 @@ app.use(cookieParser());
 // Routes
 var index = require('./routes/index');
 var summoner = require('./routes/summoner');
+var match = require('./routes/match');
 
 app.use('/', index);
 app.use('/summoner', summoner);
+app.use('/match', match);
 
 if (app.get('env') === 'development') {
     var debug = require('./routes/debug');

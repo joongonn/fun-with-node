@@ -27,9 +27,13 @@ app.use(cookieParser());
 var index = require('./routes/index');
 var summoner = require('./routes/summoner');
 
-// Routes
 app.use('/', index);
 app.use('/summoner', summoner);
+
+if (app.get('env') === 'development') {
+    var debug = require('./routes/debug');
+    app.use('/debug', debug);
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -41,7 +45,6 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
-//if (app.get('env') === 'development') {
 app.use(function(err, req, res, next) {
     var status = err.status || 500;
     res.status(status);

@@ -28,5 +28,9 @@ var self = module.exports = {
 
     evict: function(cacheKey) {
         delete processCache[cacheKey];
+    },
+
+    dump: function() {
+        return processCache;
     }
 };

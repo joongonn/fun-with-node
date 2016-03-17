@@ -28,7 +28,7 @@ function evict(cacheKey, err) {
 var self = module.exports = {
     //FIXME: client can ask for a championId that does not exist here?
     getStaticDataChampionsLookup: function(region, forceRefresh) {
-        var cacheKey = `/static-data/${region}/champion`;
+        var cacheKey = `/lol/static-data/${region}/champion`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
 
         if (cached) {
@@ -55,7 +55,7 @@ var self = module.exports = {
     getSummoner: function(region, name, forceRefresh) {
         var name = name.toLowerCase().replace(/\s/g, ''); // Eh, undocumented behavior.
 
-        var cacheKey = `/summoner/${region}/${name}`;
+        var cacheKey = `/lol/summoner/${region}/${name}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
 
         if (cached) {
@@ -71,7 +71,7 @@ var self = module.exports = {
     },
 
     getStatsSummary: function(region, season, summonerId, forceRefresh) {
-        var cacheKey = `/stats/${region}/${summonerId}/summary/${season}`;
+        var cacheKey = `/lol/stats/summary/${region}/${summonerId}/${season}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
 
         if (cached) {
@@ -87,7 +87,7 @@ var self = module.exports = {
     },
 
     getStatsRanked: function(region, season, summonerId, forceRefresh) {
-        var cacheKey = `/ranked/${region}/${summonerId}/summary/${season}`;
+        var cacheKey = `/lol/stats/ranked/${region}/${summonerId}/summary/${season}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
 
         if (cached) {
@@ -104,7 +104,7 @@ var self = module.exports = {
 
     //TODO: Games can be persisted.
     getGameRecent: function(region, summonerId, forceRefresh) {
-        var cacheKey = `/game/recent/${region}/${summonerId}`;
+        var cacheKey = `/lol/game/recent/${region}/${summonerId}`;
         var cached = !forceRefresh && cacheManager.get(cacheKey);
 
         if (cached) {

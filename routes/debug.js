@@ -10,4 +10,9 @@ router.get('/cache', function(req, res, next) {
     res.json(allKeys);
 });
 
+router.get('/cache.full', function(req, res, next) {
+    res.json(cacheManager.dump());
+});
+
+
 module.exports = router;

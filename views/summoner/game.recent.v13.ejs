@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-            <% if (game.$fellowPlayers.teams.length >=2) { %>
+            <% if (game.$fellowPlayers.teams.length > 0) { %>
                 <div class="col-md-8">
                     <div align="right"><%= humanizeDuration(game.stats.timePlayed * 1000) %></div>
                     <div class="bordered bgwhite row">
@@ -44,25 +44,27 @@
                                 <% }) %>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div align="right"><% if (game.$fellowPlayers.teams[1].win) { %><span class="victory">Victory</span><% } else { %><span class="defeat">Defeat</span><% } %></div>
-                            <div class="<%= game.$fellowPlayers.teams[1].win ? 'bordered-victory' : 'bordered-defeat' %>">
-                                <% game.$fellowPlayers.teams[1].players.forEach(player => {
-                                       var championData = lookups.champions.get(player.championId);
-                                       var summonerName = gameRecent.$lookups.getSummonerNameById(player.summonerId);
-                                %>
-                                    <% if (player.summonerId == gameRecent.summonerId) { %><div class="media highlight"><% } else { %><div class="media"><% } %>
-                                        <div class="media-left">
-                                            <img style="width: 32px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=championData.key%>.png" class="media-object">
+                        <% if (game.$fellowPlayers.teams.length > 1) { %>
+                            <div class="col-md-6">
+                                <div align="right"><% if (game.$fellowPlayers.teams[1].win) { %><span class="victory">Victory</span><% } else { %><span class="defeat">Defeat</span><% } %></div>
+                                <div class="<%= game.$fellowPlayers.teams[1].win ? 'bordered-victory' : 'bordered-defeat' %>">
+                                    <% game.$fellowPlayers.teams[1].players.forEach(player => {
+                                           var championData = lookups.champions.get(player.championId);
+                                           var summonerName = gameRecent.$lookups.getSummonerNameById(player.summonerId);
+                                    %>
+                                        <% if (player.summonerId == gameRecent.summonerId) { %><div class="media highlight"><% } else { %><div class="media"><% } %>
+                                            <div class="media-left">
+                                                <img style="width: 32px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=championData.key%>.png" class="media-object">
+                                            </div>
+                                            <div class="media-body">
+                                                <span class="media-heading"><b><a href="<%= summonerName %>"><%= summonerName %></a></b></span>
+                                                <p><%= championData.name %></p>
+                                            </div>
                                         </div>
-                                        <div class="media-body">
-                                            <span class="media-heading"><b><a href="<%= summonerName %>"><%= summonerName %></a></b></span>
-                                            <p><%= championData.name %></p>
-                                        </div>
-                                    </div>
-                                <% }) %>
+                                    <% }) %>
+                                </div>
                             </div>
-                        </div>
+                        <% } %>
                     </div>
                 </div>
             <% } %>

@@ -9,6 +9,7 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var appErrors = require('./errors');
 var logger = require('./logger');
 
 var app = express();
@@ -41,23 +42,25 @@ if (app.get('env') === 'development') {
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     res.status(404);
-    res.render('error', {
-        message: `HTTP 404`,//err.message,
-        error: {} // will print stacktrace
-    }); 
+    res.render('oops', { message: `We can't find what you're looking for (HTTP 404)` });
 });
 
 // error handlers
 app.use(function(err, req, res, next) {
-    var status = err.status || 500;
-    res.status(status);
-    res.render('error', {
-        message: `HTTP ${status}`,//err.message,
-        error: err // will print stacktrace
-    });
+    if (err instanceof appErrors.AppError) {
+        res.status(err.statusCode);
+        res.render('oops', { message: `${err.message} (HTTP ${err.statusCode})` });
+    } else {
+        var status = err.status || 500;
+        res.status(status);
+        res.render('error', {
+            message: `HTTP ${status}`,
+            error: err // will print stacktrace
+        });
 
-    // Log all uncaught exceptions
-    logger.error(err);
+        // Log all uncaught exceptions
+        logger.error(err);
+    }
 });
 
 module.exports = app;

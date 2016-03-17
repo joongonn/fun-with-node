@@ -2,6 +2,7 @@
 var logger = require('./logger');
 var rp = require('request-promise'); // https://github.com/request/request-promise
 var errors = require('request-promise/errors');
+var appErrors = require('./errors');
 
 const HOSTS = {
     'na' : 'https://na.api.pvp.net', //FIXME: this assumes same version across all regions
@@ -20,7 +21,7 @@ function handleError(call) {
                     logger.debug(`Returning [null] for call:[${call}]`);
                     return null;
                 }
-                case 429: throw new Error('Exceeded API limit, try again later');
+                case 429: throw new appErrors.AppError(503, 'Exceeded Riot API limit, please try again later', err);
                 // etc
             }
         }

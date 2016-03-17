@@ -1,4 +1,5 @@
 //TODO: request batching/coalescing
+var urlencode = require('urlencode');
 var logger = require('./logger');
 var rp = require('request-promise'); // https://github.com/request/request-promise
 var errors = require('request-promise/errors');
@@ -65,7 +66,7 @@ module.exports = function(apiKey) {
         getSummonerByName: function(region, name) { //FIXME: batched query (names), tolowercase the name
             const version = 1.4;
             var options = {
-                uri: `${HOSTS[region]}/api/lol/${region}/v${version}/summoner/by-name/${name}?api_key=${apiKey}`,
+                uri: `${HOSTS[region]}/api/lol/${region}/v${version}/summoner/by-name/${urlencode(name)}?api_key=${apiKey}`,
                 json: true
             };
             var call = `getSummonerByName(${region}, ${name})`;

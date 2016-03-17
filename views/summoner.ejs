@@ -55,9 +55,9 @@
 
             <div class="row">
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#summary" data-toggle="tab" class="bold">Summary (<%=season%>)</a></li>
-                    <li role="presentation"><a href="#ranked" data-toggle="tab" class="bold">Ranked (<%=season%>)</a></li>
-                    <li role="presentation"><a href="#gameRecent" data-toggle="tab" class="bold">Recent Games</a></li>
+                    <li role="presentation" class="active"><a href="#summary" data-toggle="tab" class="bold">Summary (<%= season %>)</a></li>
+                    <li role="presentation"><a href="#ranked" data-toggle="tab" class="bold">Ranked (<%= season %>)</a></li>
+                    <li role="presentation"><a href="#gameRecent" data-toggle="tab" class="bold">Recent Games (<%= gameRecent ? gameRecent.games.length : 0 %>)</a></li>
                 </ul>
             </div>
 

@@ -7,6 +7,7 @@ var logger = require('./logger');
 var riot = require('./riot')(process.env.RIOT_API_KEY);
 var cacheManager = require('./cache-manager')
 var _ = require("underscore");
+var appErrors = require('./errors');
 
 var persistenceManager = null; //FIXME: it was a past season, then persist it
 
@@ -236,7 +237,7 @@ var self = module.exports = {
             var full = self.getSummoner(region, name, forceRefresh)
                            .then(summoner => {
                                 if (!summoner) {
-                                    throw new Error(`No such summoner:[${name}]`);
+                                    throw new appErrors.AppError(404, `No such summoner:[${name}]`);
                                 }
 
                                 var id = summoner.id;

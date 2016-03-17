@@ -5,7 +5,7 @@
     %>
         <div class="row well well-sm">
             <div class="col-md-4">
-                <p style="margin: 0"><b><%= game.gameMode %></b> - <%= humanizeDuration(new Date().getTime() - game.createDate, { units: ['d', 'h', 'm'], round: true }) %> ago</p>
+                <p style="margin: 0"><b><%= i+1 %>. <%= game.gameMode %></b> - <%= humanizeDuration(new Date().getTime() - game.createDate, { units: ['d', 'h', 'm'], round: true }) %> ago</p>
                 <div class="media bordered bgwhite" style="padding: 16px">
                     <div class="media-left">
                         <img style="width: 80px" src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/champion/<%=myChampionData.key%>.png" class="media-object">
@@ -67,7 +67,7 @@
                         <% } %>
                     </div>
                     <div style="padding-top: 8px">
-                        <a href="/match/<%= gameRecent.$region %>/<%= game.gameId %>/json"><button class="btn btn-primary btn-sm pull-right" style="margin-right: -15px"><span class="glyphicon glyphicon-option-horizontal"></span></button></a>
+                        <a href="/match/<%= gameRecent.$region %>/<%= game.gameId %>"><button class="btn btn-primary btn-sm pull-right" style="margin-right: -15px"><span class="glyphicon glyphicon-option-horizontal"></span></button></a>
                     </div>
                 </div>
             <% } %>

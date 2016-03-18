@@ -42,7 +42,7 @@ var self = module.exports = {
                                                z[champion.id] = champion;
                                                return z;
                                            }, {});
-                                           championsById.get = id => championsById[id.toString()];
+                                           championsById.get = function(id) { return championsById[id.toString()]; }
                                            return championsById;
                                        })
                                       .then(setRefreshedDate)

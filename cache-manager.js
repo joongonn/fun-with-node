@@ -15,11 +15,10 @@ var self = module.exports = {
     },
 
     getMany: function(cacheKeys) {
-        //TODO: real batching
-        var results ={};
-        _.each(cacheKeys, key => results[key] = self.get(key));
-
-        return results;
+        return _.reduce(cacheKeys, (z, key) => {
+            z[key] = self.get(key);
+            return z;
+        }, {});
     },
 
     set: function(cacheKey, thing) {

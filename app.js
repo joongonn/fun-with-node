@@ -1,18 +1,23 @@
-//TODO: figure out gzipped/lastmodified
-// CONFIGURATION: http://dailyjs.com/2014/01/02/recipe-for-express-configuration/
-//FIXME: log all 500 errors
-//FIXME: prime all the static assets eg. profile icons
+//TODO: configuration library?
+//TODO: prime all the static assets eg. profile icons
+//TODO: operational: figure out gzipped/lastmodified, incoming connection(pool/backlog settings?)
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-
-var appErrors = require('./errors');
-var logger = require('./logger');
+var cookieParser = require('cookie-parser'); // useless for now
+var bodyParser = require('body-parser'); // useless for now
 
 var app = express();
+
+// our app configurables - only one for now
+var riotApiKey = process.env.RIOT_API_KEY;
+
+// our app modules
+var appErrors = require('./errors');
+var logger = require('./logger'); //TODO: injectable logging config (dev:debug/prod:warn)
+var riot = require('./riot')(riotApiKey, logger); // injected
+var statsManager = require('./stats-manager')(riot, logger); // injected
 
 // view engine setup
 app.use(express.static(path.join(__dirname, 'public')));
@@ -27,8 +32,8 @@ app.use(cookieParser());
 
 // Routes
 var index = require('./routes/index');
-var summoner = require('./routes/summoner');
-var match = require('./routes/match');
+var summoner = require('./routes/summoner')(statsManager); // injected
+var match = require('./routes/match')(statsManager); // injected
 
 app.use('/', index);
 app.use('/summoner', summoner);

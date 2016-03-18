@@ -1,4 +1,3 @@
-//FIXME: injected, centralized config
 var winston = require('winston');
 
 function formatter(args) {
@@ -14,6 +13,7 @@ function formatter(args) {
 var logger = new winston.Logger({
     transports: [
         //TODO: rolling file appender
+        //TODO: injected, centralized config
         new winston.transports.Console({
             level: 'debug',
             handleExceptions: true,
